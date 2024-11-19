@@ -2,7 +2,7 @@
 
 ### Usage:
 
-`python bingHack.py [-h] [-k KEYWORD] [-o OUTPUT_FILE] [-n RES_NUM] [-f]`
+`python bingHack.py [-h] [-k KEYWORD] [-o OUTPUT_FILE] [-n RES_NUM] [-f] [-c COOKIE]`
 
 >  Thanks for using bingHack.py, if there is any problem please contact me: 
 >
@@ -35,6 +35,8 @@
 `-n RES_NUM, --res_num RES_NUM` 	Record number for output
 
 `-f, --full`         use international Bing engine - more precise queries
+
+`-c COOKIE, --cookie COOKIE`		config cookie by param
 
 ### Question
 

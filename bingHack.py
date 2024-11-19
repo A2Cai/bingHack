@@ -129,11 +129,13 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--output-file", help='Filename for output')
     parser.add_argument("-n", "--res_num", help='Record number for output')
     parser.add_argument("-f", "--full", help='use international Bing engine', action="store_true")
+    parser.add_argument("-c", "--cookie", help='config cookie by param')
     args = parser.parse_args()
     keyword = args.keyword
     filename = args.output_file
     res_num = args.res_num
     global_bing_flag = args.full
+    cookie = args.cookie
 
     if not keyword:
         exit("Missing Param: keyword ...")
@@ -141,8 +143,10 @@ if __name__ == '__main__':
         bing = Bing(keyword, int(res_num), global_bing_flag)
     else:
         bing = Bing(keyword, global_bing_flag)
-    if bing.cookies['MUIDB'] == "":
+    if bing.cookies['MUIDB'] == "" and not cookie:
         exit("【WARNING】: Missing cookies can result in query results that are far less than the actual situation.")
+    elif cookie:
+        bing.cookies['MUIDB'] = cookie
     bing.getPageAllUrl()
     if filename:
         bing.saveAsFile(filename)
