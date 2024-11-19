@@ -6,7 +6,21 @@
 
 >  Thanks for using bingHack.py, if there is any problem please contact me: 
 >
-> 【Wechat: A2Cai_】 or 【Email: 1149652550@qq.com】
+>  **Wechat**:  A2Cai_
+>
+>  **Email**:  1149652550@qq.com
+
+1. GoogleHack + asset survival detect
+
+`python bingHack/bingHack.py -k "intitle:公司 && inurl:.php?id" -n 2000 | python HRU/HRU.py -p -s`
+
+2. Read from file and display the results on console
+
+`python bingHack.py -k "site:edu.cn" -n 2000`
+
+3. Read from file and save the results as a file
+
+`python bingHack.py -k "site:edu.cn" -n 2000 -o result.txt`
 
 ### Options:
 

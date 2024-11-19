@@ -1,7 +1,7 @@
 from urllib.parse import quote, urlencode
 from re import match
 import argparse
-from time import sleep, time
+from time import sleep
 from bs4 import BeautifulSoup as bs
 from threading import Thread
 import requests
@@ -63,16 +63,13 @@ class Bing:
                 for j in range(i*100, (i+1)*100):
                     tmp.append(threads[j])
                 t_list.append(tmp)
-            start_time = int(time())
             for index, group in enumerate(t_list):
                 for thread in group:
                     thread.start()
                 for thread in group:
                     thread.join()
                 if index == len(t_list)-1:
-                    print(f"使用的时间: {int(time()) - start_time}s")
                     return self.ret_list
-                print(f"{index+1} Group Finished~")
                 # 以免连接太多 Bing 拒绝连接
                 sleep(5)
         for j in threads:
@@ -145,7 +142,7 @@ if __name__ == '__main__':
     else:
         bing = Bing(keyword, global_bing_flag)
     if bing.cookies['MUIDB'] == "":
-        print("【WARNING】: Missing cookies can result in query results that are far less than the actual situation.")
+        exit("【WARNING】: Missing cookies can result in query results that are far less than the actual situation.")
     bing.getPageAllUrl()
     if filename:
         bing.saveAsFile(filename)
