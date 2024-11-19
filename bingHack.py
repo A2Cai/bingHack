@@ -1,4 +1,4 @@
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 from re import match
 import argparse
 from time import sleep, time
@@ -6,26 +6,12 @@ from bs4 import BeautifulSoup as bs
 from threading import Thread
 import requests
 
-# You must be login in and add your cookie to the following headers.
 
 class Bing:
-    headers = {
-        "User-Agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Cookie": "MUID=154B90D1D66E62A918858468D7086389; MUIDB=154B90D1D66E62A918858468D7086389; _EDGE_V=1; SRCHD=AF=NOFORM; SRCHUID=V=2&GUID=CDA807A26A95424692D8749737E01331&dmnchg=1; SRCHUSR=DOB=20240711&T=1731989518000&POEX=W; SRCHHPGUSR=SRCHLANG=zh-Hans&BRW=W&BRH=S&CW=1450&CH=283&SCW=1451&SCH=283&DPR=1.8&UTC=480&DM=1&HV=1731989521&WTS=63867456131&PRVCW=1450&PRVCH=774&EXLTT=31&THEME=0&WEBTHEME=0&IG=0FE015E15FAE490281830F8B1047537A&AV=14&ADV=14&RB=0&MB=0; _HPVN=CS=eyJQbiI6eyJDbiI6MiwiU3QiOjAsIlFzIjowLCJQcm9kIjoiUCJ9LCJTYyI…DumCFYqvpJ0Ogqv9fdDiMo=; MUIDB=154B90D1D66E62A918858468D7086389; MSCC=cid=hh836iobn99x4y31rf5i5eps-c1=2-c2=2-c3=2; SnrOvr=X=rebateson; SNRHOP=I=&TS=; _EDGE_S=SID=300F3830F0A366D232842D0CF1E06747; WLS=C=8f125643d0c6b11f&N=%e6%95%8c; _SS=SID=300F3830F0A366D232842D0CF1E06747&R=1379&RB=1379&GB=0&RG=1800&RP=1379; ipv6=hit=1731993120232&t=4; _C_ETH=1; _Rwho=u=d&ts=2024-11-19; MicrosoftApplicationsTelemetryDeviceId=2514d39b-b0d2-43f2-aba1-375699cd1ad8; ai_session=IT2xoMqxiD9kEvlBw6KsOG|1731989523362|1731989523362".encode("utf-8").decode("unicode_escape"),
-        "Referer": "https://cn.bing.com/search?q=site%3aedu.cn&rdr=1&FPIG=F9E8B1EB09E745598DE4ECA499F51BC3&FPIG=097F1C9E25414FC7ABC61F4299AE7BB7&first=11&FORM=PERE",
-        "DNT": "1",
-        "Sec-GPC": "1",
-        "Connection": "keep-alive",
-        "Upgrade-Insecure-Requests": "1",
-        "Sec-Fetch-Dest": "document",
-        "Sec-Fetch-Mode": "navigate",
-        "Sec-Fetch-Site": "same-origin",
-        "Sec-Fetch-User": "?1",
-        "Priority": "u=0, i",
-        "Pragma": "no-cache",
-        "Cache-Control": "no-cache",
-        "TE": "trailers",
+
+    # You must be login in and fill your cookie in the following field.
+    cookies = {
+        "MUIDB": ""
     }
 
     # 可以添加不需要收集的域名
@@ -43,13 +29,22 @@ class Bing:
         "github.com", # github
         "www.php.net", # php 官网
         "www.php.cn", # php 中文网
+        "zhuanlan.zhihu.com", # 知乎专栏
+        "www.php.id",
+        "stackoverflow.com", #stackoverflow
     ]
 
     ret_list = []
 
-    def __init__(self, keyword, record_num=1000):
+    def __init__(self, keyword, record_num=1000, global_bing = 0):
         self.keyword = keyword
         self.record_num = int((record_num/10) * 14)
+        if global_bing:
+            # 国际版内容更全，但必须得挂梯子
+            self.bing_domain = "www.bing.com"
+        else:
+            # 国内版 bing
+            self.bing_domain = "cn.bing.com"
 
     def getPageAllUrl(self):
         threads = []
@@ -84,12 +79,19 @@ class Bing:
             j.start()
         for j in threads:
             j.join()
+        # 使用 set 对 list 去重
+        try:
+            tmp = list(set(self.ret_list))
+        except:
+            return self.ret_list
+        self.ret_list = tmp
         return self.ret_list
 
 
     def getPageUrl(self, pn_start):
-        url = f"https://cn.bing.com/search?q={quote(self.keyword)}&first={str(pn_start)}&rdr=1&FORM=PERE1"
-        ans = requests.get(url=url, headers=self.headers)
+        url = f"https://{self.bing_domain}/search?q={quote(self.keyword, encoding='utf-8')}&first={str(pn_start)}&rdr=1&FORM=QBRE"
+        ans = requests.get(url=url, cookies=self.cookies)
+        # ans = requests.get(url=url, )
         urls = self.htmlParser(ans.text)
         ans.close()
         self.ret_list += urls
@@ -129,21 +131,26 @@ if __name__ == '__main__':
     parser.add_argument("-k", "--keyword", help='Search keyword for GoogleHack, for example: site:edu.cn&&inurl:.php?id')
     parser.add_argument("-o", "--output-file", help='Filename for output')
     parser.add_argument("-n", "--res_num", help='Record number for output')
+    parser.add_argument("-f", "--full", help='use international Bing engine', action="store_true")
     args = parser.parse_args()
     keyword = args.keyword
     filename = args.output_file
     res_num = args.res_num
+    global_bing_flag = args.full
+
     if not keyword:
         exit("Missing Param: keyword ...")
     if res_num:
-        bing = Bing(keyword, int(res_num))
+        bing = Bing(keyword, int(res_num), global_bing_flag)
     else:
-        bing = Bing(keyword)
+        bing = Bing(keyword, global_bing_flag)
+    if bing.cookies['MUIDB'] == "":
+        print("【WARNING】: Missing cookies can result in query results that are far less than the actual situation.")
     bing.getPageAllUrl()
     if filename:
         bing.saveAsFile(filename)
+        print(f"Total record len: {len(bing.ret_list)}")
     else:
         for i in bing.ret_list:
             print(i)
-        print(f"Total record len: {len(bing.ret_list)}")
 

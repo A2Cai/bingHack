@@ -2,7 +2,7 @@
 
 ### Usage:
 
-`python bingHack.py [-h] [-k KEYWORD] [-f FILE] [-n RES_NUM]`
+`python bingHack.py [-h] [-k KEYWORD] [-o OUTPUT_FILE] [-n RES_NUM] [-f]`
 
 >  Thanks for using bingHack.py, if there is any problem please contact me: 
 >
@@ -16,7 +16,14 @@
 
 ​	Search keyword for GoogleHack, for example: site:edu.cn&&inurl:.php?id
 
-`-f FILE, --file FILE`	 Filename for output
+`-o OUTPUT_FILE, --output-file OUTPUT_FILE`	 Filename for output
 
 `-n RES_NUM, --res_num RES_NUM` 	Record number for output
 
+`-f, --full`         use international Bing engine - more precise queries
+
+### Question
+
+1. Why am I querying far less data than the actual amount ?
+
+> Log in to Bing and paste the MUIDB value from the cookie into the script.
