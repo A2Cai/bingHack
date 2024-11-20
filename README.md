@@ -2,7 +2,7 @@
 
 ### Usage:
 
-`python bingHack.py [-h] [-k KEYWORD] [-o OUTPUT_FILE] [-n RES_NUM] [-f] [-c COOKIE]`
+`python bingHack.py [-h] [-k KEYWORD] [-o OUTPUT_FILE] [-n RES_NUM] [-f] [-c COOKIE] [-v] [-s]`
 
 >  Thanks for using bingHack.py, if there is any problem please contact me: 
 >
@@ -12,15 +12,15 @@
 
 1. GoogleHack + asset survival detect
 
-`python bingHack/bingHack.py -k "intitle:公司 && inurl:.php?id" -n 2000 | python HRU/HRU.py -p -s`
+`python bingHack/bingHack.py -k "intitle:公司 && inurl:.php?id" -n 2000 -s | python HRU/HRU.py -p -s`
 
 2. Read from file and display the results on console
 
-`python bingHack.py -k "site:edu.cn" -n 2000`
+`python bingHack.py -k "site:edu.cn" -n 2000 -s -v`
 
 3. Read from file and save the results as a file
 
-`python bingHack.py -k "site:edu.cn" -n 2000 -o result.txt`
+`python bingHack.py -k "site:edu.cn" -n 2000 -o result.txt -v` 
 
 ### Options:
 
@@ -38,8 +38,12 @@
 
 `-c COOKIE, --cookie COOKIE`		config cookie by param
 
+`-v, --show-info`      	 show info
+
+`-s, --show-result`     	display result on console
+
 ### Question
 
 1. Why am I querying far less data than the actual amount ?
 
-> Log in to Bing and paste the MUIDB value from the cookie into the script.
+> Depend on Bing and your network...In other words, Bing has its own Search API, so I estimate that it will impose certain restrictions on my scripts. However, so far I have not found any patterns regarding these restrictions, so my scripts are not stable. Sometimes they produce satisfactory results, and sometimes they may have nothing at all
